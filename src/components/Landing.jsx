@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layers, ArrowRight, Zap, Shield, FileText } from 'lucide-react';
+import CymonicLogo from './CymonicLogo';
 
 export default function Landing({ onGetStarted }) {
   return (
@@ -7,8 +8,12 @@ export default function Landing({ onGetStarted }) {
       <div className="max-w-4xl mx-auto px-6 text-center">
         
         {/* Hero Section */}
+        <div className="flex justify-center mb-10">
+          <CymonicLogo size="lg" hideText={false} />
+        </div>
+
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-emerald-400 text-sm font-bold mb-8" style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
-          <Zap size={16} /> V8 Dark Pattern
+          <Zap size={16} /> V9 Framework Active
         </div>
         
         <h1 className="text-5xl md:text-6xl font-outfit text-white mb-6 leading-tight">

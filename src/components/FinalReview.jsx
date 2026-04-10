@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Download, RefreshCcw, Layout, FileJson, Copy, Check } from 'lucide-react';
+import { Download, RefreshCcw, Layout, FileJson, Copy, Check, Play, Square } from 'lucide-react';
 
 const OUTPUT_LABELS = {
   blog: 'Blog Post',
@@ -20,6 +20,7 @@ export default function FinalReview({ campaignData, sourceText, onRegenerate }) 
   const [activeOutput, setActiveOutput] = useState(generatedKeys[0] || '');
   const [isDownloading, setIsDownloading] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
+  const [playingKey, setPlayingKey] = useState(null);
 
   useEffect(() => {
     if (!generatedKeys.includes(activeOutput) && generatedKeys.length > 0) {
@@ -56,6 +57,23 @@ export default function FinalReview({ campaignData, sourceText, onRegenerate }) 
     }
   };
 
+  const handleTTS = (key, text) => {
+    if (playingKey === key) {
+      window.speechSynthesis.cancel();
+      setPlayingKey(null);
+      return;
+    }
+    
+    window.speechSynthesis.cancel(); // kill any active speech
+    
+    const utterance = new SpeechSynthesisUtterance(text.replace(/[#*`_[\]]/g, ''));
+    utterance.onend = () => setPlayingKey(null);
+    utterance.onerror = () => setPlayingKey(null);
+    
+    setPlayingKey(key);
+    window.speechSynthesis.speak(utterance);
+  };
+
   const ContentCard = ({ title, contentKey }) => {
     const rawContent = campaignData[contentKey];
     if (!rawContent) return null;
@@ -64,13 +82,22 @@ export default function FinalReview({ campaignData, sourceText, onRegenerate }) 
       <div className="glass-panel p-8 mb-8 fade-in relative">
         <div className="flex justify-between items-center mb-6 border-b pb-4" style={{ borderColor: 'var(--border-color)' }}>
           <h3 className="text-xl font-bold text-white">{title}</h3>
-          <button 
-            onClick={() => handleCopy(contentKey, rawContent)}
-            className="flex items-center gap-2 text-xs py-1 px-3 rounded-md transition-all hover:bg-slate-700 text-slate-300"
-            style={{ border: '1px solid var(--border-color)', background: 'var(--bg-dark)', cursor: 'pointer' }}
-          >
-            {copiedKey === contentKey ? <><Check size={14} color="var(--accent-primary)"/> Copied!</> : <><Copy size={14}/> Copy</>}
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => handleTTS(contentKey, rawContent)}
+              className={`flex items-center gap-2 text-xs py-1 px-3 rounded-md transition-all ${playingKey === contentKey ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'hover:bg-slate-700 text-slate-300'}`}
+              style={{ border: playingKey === contentKey ? undefined : '1px solid var(--border-color)', background: playingKey === contentKey ? undefined : 'var(--bg-dark)', cursor: 'pointer' }}
+            >
+              {playingKey === contentKey ? <><Square size={14}/> Stop</> : <><Play size={14}/> Read</>}
+            </button>
+            <button 
+              onClick={() => handleCopy(contentKey, rawContent)}
+              className="flex items-center gap-2 text-xs py-1 px-3 rounded-md transition-all hover:bg-slate-700 text-slate-300"
+              style={{ border: '1px solid var(--border-color)', background: 'var(--bg-dark)', cursor: 'pointer' }}
+            >
+              {copiedKey === contentKey ? <><Check size={14} color="var(--accent-primary)"/> Copied!</> : <><Copy size={14}/> Copy</>}
+            </button>
+          </div>
         </div>
         <div className="prose prose-invert max-w-none">
           <ReactMarkdown>{rawContent}</ReactMarkdown>

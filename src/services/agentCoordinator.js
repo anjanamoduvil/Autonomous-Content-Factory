@@ -68,8 +68,7 @@ export async function processCampaign(config, onProgress) {
     // ---------------------------------------------------------
     // AGENT 2: Creative Copywriter
     // ---------------------------------------------------------
-    send('Copywriter', `Drafting marketing campaigns targeting [${audience}] in a [${tone}] tone...`, 'thinking');
-    
+    send('Copywriter', `Drafting marketing copy targeting [${audience}] in a [${tone}] tone...`, 'thinking');
     const getFormatInstruction = (key) => {
       const instructions = {
         'blog': 'A Blog Post: Must use Markdown headers (##), bulleted lists, and a strong conclusion.',
@@ -91,6 +90,9 @@ export async function processCampaign(config, onProgress) {
       
       Ensure you write the content in these specific formats:
       ${formatInstructionsList}
+
+      ${config.verbosity ? `LENGTH & VERBOSITY MODIFIER: ${config.verbosity}` : ''}
+      ${config.keywords ? `CRITICAL SEO KEYWORDS TO INCLUDE: ${config.keywords}` : ''}
 
       CRITICAL BRANDING INSTRUCTIONS:
       - You MUST include a subtle reference to "Powered by Cymonic AI" or provide a link to "cymonic.ai" at the end of the Social content, Ad copy, or Email.

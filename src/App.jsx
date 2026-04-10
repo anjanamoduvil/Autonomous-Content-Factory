@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Landing from './components/Landing';
 import UploadStage from './components/UploadStage';
 import AgentRoom from './components/AgentRoom';
 import FinalReview from './components/FinalReview';
-import { Layers } from 'lucide-react';
+import { Layers, RefreshCcw } from 'lucide-react';
+import CymonicLogo from './components/CymonicLogo';
 import './index.css';
 
 function App() {
-  const [stage, setStage] = useState('landing'); // 'landing', 'config', 'processing', 'review'
-  const [config, setConfig] = useState({ sourceText: '', tone: '', audience: '', outputs: [] });
-  const [campaignData, setCampaignData] = useState(null);
+  // Force route to Landing on hard refresh, but keep forms cached
+  const [stage, setStage] = useState('landing');
+  
+  const [config, setConfig] = useState(() => {
+    const saved = localStorage.getItem('cymonic_config');
+    return saved ? JSON.parse(saved) : { sourceText: '', tone: '', audience: '', outputs: [] };
+  });
+  
+  const [campaignData, setCampaignData] = useState(() => {
+    const saved = localStorage.getItem('cymonic_campaign');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Sync state cleanly to storage
+  useEffect(() => {
+    localStorage.setItem('cymonic_stage', stage);
+    localStorage.setItem('cymonic_config', JSON.stringify(config));
+    if (campaignData) {
+      localStorage.setItem('cymonic_campaign', JSON.stringify(campaignData));
+    } else {
+      localStorage.removeItem('cymonic_campaign');
+    }
+  }, [stage, config, campaignData]);
 
   const handleStartProcessing = (options) => {
     setConfig(options);
@@ -22,29 +43,50 @@ function App() {
     setStage('review');
   };
 
+  // Give users a way to wipe the cache fully
+  const handleReset = () => {
+    localStorage.clear();
+    setCampaignData(null);
+    setConfig({ sourceText: '', tone: '', audience: '', outputs: [] });
+    setStage('config');
+  };
+
   return (
     <div className="w-full flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg-dark)' }}>
       
       {/* Global Header */}
       {stage !== 'landing' && (
         <header className="w-full border-b px-8 py-4 flex justify-between items-center z-20 shrink-0 shadow-sm fade-in" style={{ backgroundColor: 'var(--bg-sidebar)', borderColor: 'var(--border-color)' }}>
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setStage('landing')}>
-            <div className="p-2 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)'}}>
-              <Layers size={22} color="var(--accent-primary)" />
-            </div>
-            <div>
-              <h1 className="text-xl font-outfit text-white" style={{ margin: 0, lineHeight: 1 }}>Cymonic</h1>
-              <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Content Factory</span>
-            </div>
+          <div className="flex items-center cursor-pointer" onClick={() => setStage('landing')}>
+            <CymonicLogo size="sm" hideText={false} />
+            <div className="h-6 border-l border-slate-600 mx-4"></div>
+            <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mt-1">Content Factory</span>
           </div>
           
-          {/* Stepper */}
-          <div className="hidden md:flex items-center gap-4 text-sm font-semibold">
-            <span className={stage === 'config' ? 'text-white' : 'text-slate-500'}>1. Configure</span>
-            <span className="text-slate-600">-----</span>
-            <span className={stage === 'processing' ? 'text-white' : 'text-slate-500'}>2. Generate</span>
-            <span className="text-slate-600">-----</span>
-            <span className={stage === 'review' ? 'text-white' : 'text-slate-500'}>3. Publish</span>
+          <div className="flex items-center gap-6">
+            {/* Visual Node Stepper */}
+            <div className="hidden md:flex items-center gap-3 text-xs font-bold">
+              <div className={`flex items-center gap-2 ${stage === 'config' ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${stage === 'config' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>1</div>
+                <span>Configure</span>
+              </div>
+              <div className="w-8 h-px bg-slate-700"></div>
+              
+              <div className={`flex items-center gap-2 ${stage === 'processing' ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${stage === 'processing' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>2</div>
+                <span>Generate</span>
+              </div>
+              <div className="w-8 h-px bg-slate-700"></div>
+
+              <div className={`flex items-center gap-2 ${stage === 'review' ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${stage === 'review' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>3</div>
+                <span>Publish</span>
+              </div>
+            </div>
+            
+            <button onClick={handleReset} className="flex items-center justify-center p-2 rounded-full text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all ml-4" title="Hard Reset Memory">
+              <RefreshCcw size={18} />
+            </button>
           </div>
         </header>
       )}
@@ -56,7 +98,7 @@ function App() {
 
         {stage === 'config' && (
           <div className="w-full p-6 md:p-12 mb-12">
-            <div className="max-w-4xl mx-auto w-full fade-in">
+            <div className="max-w-7xl mx-auto w-full fade-in">
               <UploadStage onStart={handleStartProcessing} isProcessing={false} />
             </div>
           </div>
