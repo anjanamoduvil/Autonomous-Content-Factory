@@ -100,6 +100,17 @@ h1, h2, h3, h4, h5, h6, .font-outfit {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes drift {
+  from { background-position: 0 0; }
+  to { background-position: -80px -80px; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
 button {
   cursor: pointer; border: none; border-radius: 8px;
   padding: 10px 20px; font-weight: 600; font-family: inherit;

@@ -102,42 +102,47 @@ export default function UploadStage({ onStart, isProcessing }) {
 
         <form id="config-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="glass-panel p-6 flex flex-col gap-4 relative">
-            <div className="flex justify-between items-center border-b pb-3 border-slate-700">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2"><FileText size={18} className="text-emerald-500" /> Source Material</h3>
-              <div className="flex items-center gap-2">
-                <button type="button" onClick={handleDictation} className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-md transition-all ${isRecording ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 'btn-secondary text-slate-400'}`}>
-                  {isRecording ? <MicOff size={14} className="animate-pulse" /> : <Mic size={14} />} {isRecording ? 'Recording...' : 'Dictate'}
+            <div className="flex flex-wrap justify-between items-center pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <h3 className="text-xl font-bold text-white flex items-center gap-3"><FileText size={20} className="text-emerald-500" /> Source Material</h3>
+              <div className="flex items-center gap-3 mt-4 sm:mt-0">
+                <button type="button" onClick={handleDictation} className={`flex items-center gap-2 px-4 py-2 font-bold text-sm rounded-lg transition-all shadow-lg ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-red-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'}`}>
+                  {isRecording ? <MicOff size={16} /> : <Mic size={16} />} {isRecording ? 'Recording...' : 'Dictate'}
                 </button>
-                <button type="button" onClick={() => fileInputRef.current.click()} className="btn-secondary flex items-center gap-2 px-3 py-1.5 text-xs rounded-md">
-                  <Upload size={14} /> Upload (.md)
+                <button type="button" onClick={() => fileInputRef.current.click()} className="flex items-center gap-2 px-4 py-2 font-bold text-sm rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all shadow-lg shadow-emerald-500/10">
+                  <Upload size={16} /> Upload (.md)
                 </button>
+                {/* STRICTLY HIDDEN NATIVE INPUT BOX */}
+                <input type="file" accept=".txt,.md,.csv,.json" onChange={handleFileUpload} ref={fileInputRef} style={{ display: 'none' }} />
               </div>
-              <input type="file" accept=".txt,.md,.csv,.json" onChange={handleFileUpload} ref={fileInputRef} className="hidden" />
             </div>
             <textarea 
-              className="flex-1 min-h-[140px] text-sm leading-relaxed"
-              placeholder="Paste absolute raw facts, dump an email chain, or upload product specs..."
+              className="flex-1 w-full text-sm leading-relaxed text-white placeholder-slate-500 transition-all focus:ring-2 focus:ring-emerald-500/50"
+              style={{ minHeight: '160px', padding: '20px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', outline: 'none' }}
+              placeholder="Paste raw facts, dump an email chain, upload specs, or click dictate to speak directly..."
               value={text}
               onChange={(e) => setText(e.target.value)}
               disabled={isProcessing}
             />
           </div>
 
-          <div className="glass-panel p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-bold text-white border-b pb-3 border-slate-700 flex items-center gap-2"><Settings size={18} className="text-emerald-500" /> Audience Parameters</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Tone Vector</label>
-                <select value={tone} onChange={(e) => setTone(e.target.value)} disabled={isProcessing} className="text-sm">
+          <div className="glass-panel p-6 flex flex-col gap-6">
+            <h3 className="text-xl font-bold text-white pb-3 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <Settings size={20} className="text-emerald-500" /> Audience Parameters
+            </h3>
+            
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <label className="text-xs font-bold tracking-widest uppercase text-slate-400 flex items-center gap-2">Tone Vector</label>
+                <select value={tone} onChange={(e) => setTone(e.target.value)} disabled={isProcessing} className="text-sm cursor-pointer" style={{ padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', color: '#fff', outline: 'none' }}>
                   <option>Professional & Trustworthy</option>
                   <option>Bold & Disruptive</option>
                   <option>Conversational & Friendly</option>
                   <option>Highly Technical</option>
                 </select>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Target Demographic</label>
-                <input type="text" placeholder="e.g. C-Suite, Devs, Teens" value={audience} onChange={(e) => setAudience(e.target.value)} disabled={isProcessing} className="text-sm" />
+              <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <label className="text-xs font-bold tracking-widest uppercase text-slate-400">Target Demographic</label>
+                <input type="text" placeholder="e.g. C-Suite, Devs, Teens" value={audience} onChange={(e) => setAudience(e.target.value)} disabled={isProcessing} className="text-sm" style={{ padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', color: '#fff', outline: 'none' }} />
               </div>
             </div>
           </div>

@@ -84,9 +84,14 @@ function App() {
               </div>
             </div>
             
-            <button onClick={handleReset} className="flex items-center justify-center p-2 rounded-full text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all ml-4" title="Hard Reset Memory">
-              <RefreshCcw size={18} />
-            </button>
+            <div className="flex items-center gap-2 ml-4">
+              <button onClick={() => setStage('landing')} className="flex items-center justify-center p-2 rounded-full text-slate-500 hover:text-emerald-400 hover:bg-slate-800 transition-all" title="Return to Home">
+                <Layers size={18} />
+              </button>
+              <button onClick={handleReset} className="flex items-center justify-center p-2 rounded-full text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-all" title="Hard Reset Memory">
+                <RefreshCcw size={18} />
+              </button>
+            </div>
           </div>
         </header>
       )}

@@ -1,47 +1,63 @@
-# Cymonic Autonomous Content Factory
+<div align="center">
+  <img src="public/Screenshot_2026-04-10_155242-removebg-preview.png" width="150" alt="Cymonic Logo" />
+  <h1>Cymonic Autonomous Content Factory</h1>
+  <p><strong>A Next-Generation AI Pipeline for Professional Content Engineering</strong></p>
+</div>
 
-The **Cymonic Autonomous Content Factory** is the ultimate multi-agent AI digital marketing campaign builder. Powered by blazing-fast open-source intelligence (Meta's LLaMA 3 via Groq) and seamlessly woven together to eliminate creative burnout and inconsistency. 
+---
 
-This tool serves as an autonomous assembly line where a single source document can instantly be repackaged into multiple highly engaging formats for your brand.
+## 🚀 Overview
 
-## 🚀 Features
+The **Cymonic Autonomous Content Factory** is an enterprise-grade web application designed to automatically distill raw unstructured data into professional, multi-channel marketing campaigns. 
 
-- **Upload & Parse:** Effortlessly supply your facts via text input or by uploading `.txt` / `.md` files.
-- **Agentic Workflow:** Connects three specialized "AI Agents" inside an interactive *Agent Room*.
-  - 🔍 **Lead Research & Fact-Checker:** Mines your raw text to extract core facts and build a single "Source of Truth" JSON object.
-  - ✍️ **Creative Copywriter:** Uses the truth data to generate tailored marketing content in multiple formats.
-  - 🛡️ **Editor-in-Chief:** Audits the generated drafts to prevent hallucination, enforce tone, and apply strict brand guidelines.
-- **Dynamic Targeting:** Set custom Campaign Tones (e.g., Bold & Disruptive, Urgent & Exciting) and specify granular Target Audiences.
-- **Multi-Format Export:** Instantly outputs formatted Blog Posts, Social Media Threads, and Email Teasers.
-- **Download Campaign Kit:** Download all generated assets locally as a `.zip` file for instant deployment.
+Built with React and Vite, the platform utilizes a sophisticated **Multi-Agent Orchestrator** to analyze facts, emulate specific brand vectors, and compile tailored assets including SEO Blog Posts, Social Threads, Newsletters, and Press Releases entirely autonomously.
 
-## 🛠️ Technology Stack
+## 🛠️ Architecture: Dual-AI Pipeline
 
-- **Frontend:** React + Vite
-- **Styling:** Vanilla CSS (Glassmorphism, Neon Dark Mode)
-- **AI Core:** Built using the **Groq API** connecting natively to **Llama-3.3-70b**.
-- **Icons & Assets:** Lucide React
+To guarantee 100% uptime and completely bypass standard free-tier Token-Per-Minute (TPM) network rate limits, Cymonic employs an advanced **Dual-AI Sharding Protocol**:
 
-## 💻 Getting Started
+1. **Research & Extraction Agent (Groq / Llama 3.1 8B):** High-velocity data extraction model trained to blindly distill pure objective facts and brand vectors from your raw text drops.
+2. **Creative Copywriter (Google Gemini 1.5 Flash):** Offloads the massive token generation burden onto the highly-permissive Google Generative AI API. This module acts as the "Heavy Lifter," safely weaving the facts into distinct formats (Markdown, CSV, JSON) without triggering 429 server crashes.
+3. **Quality Assurance Editor (Groq / Llama 3.1 8B):** A final policing layer that audits the generated drafts against your structural criteria and confirms the final data schema.
 
-### 1. Requirements
-- Node.js (v18+)
+> **High-Availability Fallback:** If the live APIs are ever fully exhausted, the system seamlessly redirects the processing pipeline into "Offline Degradation Mode," injecting beautifully formatted mock content to ensure UI continuity during demonstrations.
 
-### 2. Installation
-Clone this repository and install the dependencies:
+## ✨ Features
 
+- **Bulletproof 3-Column Glassmorphism Layout:** Stunning UI aesthetics heavily inspired by modern sci-fi interfaces and clean SaaS principles.
+- **Persistent State Dashboard:** Maintains your generated workflows dynamically across stages.
+- **Voice-to-Text Input:** Built-in web speech dictation for rapid fact extraction.
+- **Format Agnostic Output:** Generates strictly compliant JSON payloads which are compiled into functional Markdown objects for immediate use.
+- **SEO & Verbosity Overrides:** Micro-tune your assets at launch by defining exact target demographics and keyword densities.
+
+## ⚙️ Local Development
+
+### 1. Installation
+
+Clone the repository and install the dependencies:
 ```bash
 git clone https://github.com/anjanamoduvil/Autonomous-Content-Factory.git
 cd Autonomous-Content-Factory
 npm install
 ```
 
-### 3. Start the Factory
-Start the Vite development server:
+### 2. Configure Node Environment
+
+You will need two API keys heavily integrated into your `.env.local` to trigger the Dual-Pipeline:
+
+```env
+VITE_GROQ_API_KEY=your_groq_llama_key
+VITE_GEMINI_API_KEY=your_google_gemini_key
+```
+
+### 3. Ignite the Engine
+
+Run the fast-refreshing Vite development server:
 ```bash
 npm run dev
 ```
-Open [http://localhost:5173/](http://localhost:5173/) to see the dashboard.
 
-## 🎨 Powered by Cymonic
-This application is fully tailored and branded under [Cymonic AI](https://cymonic.ai/). All AI agents operate under Cymonic's architectural guidelines, ensuring marketing assets are uniformly branded.
+Open your browser to `http://localhost:5173/` to view the live dashboard!
+
+---
+*Powered by Cymonic Intelligence Network.* 

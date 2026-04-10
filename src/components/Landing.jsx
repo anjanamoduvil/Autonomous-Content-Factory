@@ -1,64 +1,117 @@
 import React from 'react';
-import { Layers, ArrowRight, Zap, Shield, FileText } from 'lucide-react';
 import CymonicLogo from './CymonicLogo';
+import { ArrowRight, Mic, Play, Settings, Download, Network, FileText, Sparkles } from 'lucide-react';
 
 export default function Landing({ onGetStarted }) {
+  const features = [
+    {
+      icon: <Mic size={24} />,
+      title: "Voice-to-Text Dictation",
+      desc: "Native Web Speech API allows you to dictate raw facts directly into the system.",
+    },
+    {
+      icon: <Network size={24} />,
+      title: "Multi-Agent Workflow",
+      desc: "Llama-3 powered Researcher, Copywriter, and Editor agents working in sequence.",
+    },
+    {
+      icon: <FileText size={24} />,
+      title: "Omni-Channel Export",
+      desc: "Simultaneously generate distinct, formatted assets for Blogs, Social, and Email.",
+    },
+    {
+      icon: <Play size={24} />,
+      title: "AI Audio Reader",
+      desc: "Instantly convert generated markdown copy into synthesized speech for review.",
+    },
+    {
+      icon: <Settings size={24} />,
+      title: "SEO & Brand Injection",
+      desc: "Strictly enforce targeted SEO keywords and internal metadata constraints.",
+    },
+    {
+      icon: <Download size={24} />,
+      title: "Asset Packaging",
+      desc: "Bundle all approved campaign assets and the Fact-Sheet JSON into a .ZIP archive.",
+    }
+  ];
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center fade-in overflow-y-auto pt-16 pb-16">
-      <div className="max-w-4xl mx-auto px-6 text-center">
-        
-        {/* Hero Section */}
-        <div className="flex justify-center mb-10">
-          <CymonicLogo size="lg" hideText={false} />
-        </div>
+    <div className="relative min-h-screen w-full overflow-hidden" style={{ backgroundColor: 'var(--bg-dark)' }}>
+      
+      {/* Background Mask */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.4) 0%, transparent 60%)' }} />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-emerald-400 text-sm font-bold mb-8" style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
-          <Zap size={16} /> V9 Framework Active
-        </div>
-        
-        <h1 className="text-5xl md:text-6xl font-outfit text-white mb-6 leading-tight">
-          The <span className="text-emerald-500">Autonomous</span> Content Factory
-        </h1>
-        
-        <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-          Powered by Cymonic AI. Upload your raw facts, select your target audience, and let our multi-agent hive dynamically generate infinite marketing assets in seconds.
-        </p>
+      {/* Top Header */}
+      <nav style={{ width: '100%', padding: '24px 40px', display: 'flex', justifyContent: 'space-between' }}>
+        <CymonicLogo size="lg" />
+      </nav>
 
-        <button 
-          onClick={onGetStarted}
-          className="btn-primary text-xl px-10 py-5 rounded-xl shadow-lg flex items-center justify-center gap-3 mx-auto hover:-translate-y-1 transition-transform"
-        >
-          Get Started <ArrowRight size={24} />
-        </button>
-
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 text-left">
-          <div className="glass-panel p-6 shadow-sm">
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
-              <Layers size={24} />
-            </div>
-            <h3 className="text-xl mb-2 font-bold text-white">Multi-Agent Hive</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">An entire suite of specialized AI agents working together (Researchers, Copywriters, Editors) to ensure perfect output format.</p>
+      {/* Main Content */}
+      <main style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+        
+        {/* Top Hero Section: Pure CSS Flex Split */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '48px', minHeight: '50vh', marginTop: '40px', marginBottom: '96px' }}>
+          
+          {/* Left Column: Heading & Button */}
+          <div style={{ flex: '1 1 400px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+            <h1 className="text-5xl lg:text-7xl font-outfit text-white font-bold mb-6 tracking-tight leading-[1.1]">
+              Autonomous<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">Marketing Factory</span>
+            </h1>
+            
+            <p className="text-slate-400 text-lg lg:text-xl font-body mb-10 leading-relaxed max-w-lg">
+              Inject raw facts. Configure voice vectors. Let the Multi-Agent engine forge professional blogs, social threads, and emails in seconds.
+            </p>
+            
+            <button 
+              onClick={onGetStarted}
+              className="group relative flex flex-row items-center justify-center gap-3 font-bold text-lg text-white transition-all shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] hover:-translate-y-1"
+              style={{ 
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                color: 'white', 
+                borderRadius: '8px',
+                padding: '16px 32px',
+                border: 'none',
+                cursor: 'pointer',
+                width: 'fit-content' // STRICTLY forces button not to stretch!
+              }}
+            >
+              Ignite Factory Engine <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
 
-          <div className="glass-panel p-6 shadow-sm">
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-primary)' }}>
-              <Shield size={24} />
-            </div>
-            <h3 className="text-xl mb-2 font-bold text-white">Zero Hallucination</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">Our advanced Fact-Sheet architecture extracts pure data from your sources, forcing creative agents to adhere strictly to truth.</p>
+          {/* Right Column: Hero Image */}
+          <div style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center' }}>
+            <img 
+              src="/Screenshot_2026-04-10_155242-removebg-preview.png" 
+              alt="AI Agent Collaborative Team" 
+              style={{ width: '100%', maxWidth: '550px', borderRadius: '16px', animation: 'float 6s ease-in-out infinite' }}
+            />
           </div>
 
-          <div className="glass-panel p-6 shadow-sm">
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
-              <FileText size={24} />
-            </div>
-            <h3 className="text-xl mb-2 font-bold text-white">Dynamic Publishing</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">Instantly reformat raw data into Blogs, Press Releases, LinkedIn Articles, and Email Threads all at the exact same time.</p>
-          </div>
         </div>
 
-      </div>
+        {/* Bottom Section: 3 Boxes in a row */}
+        <div style={{ width: '100%', textAlign: 'center', marginTop: '48px', marginBottom: '32px' }}>
+          <span className="text-xs font-bold tracking-widest text-emerald-500 uppercase">Architecture Modules</span>
+        </div>
+
+        {/* 3-column pure CSS grid container */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', width: '100%', paddingBottom: '80px' }}>
+          {features.map((opt, i) => (
+            <div key={i} className="glass-panel hover:border-emerald-500/30 hover:bg-slate-800/80 transition-all fade-in" style={{ padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', animationDelay: `${i * 0.1}s` }}>
+               <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: 'rgba(16,185,129,0.1)', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+                 {opt.icon}
+               </div>
+               <h3 className="text-xl text-white font-bold mb-3">{opt.title}</h3>
+               <p className="text-sm text-slate-400 leading-relaxed">{opt.desc}</p>
+            </div>
+          ))}
+        </div>
+
+      </main>
     </div>
   );
 }
