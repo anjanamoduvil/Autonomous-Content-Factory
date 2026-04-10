@@ -1,19 +1,36 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, Settings, Upload } from 'lucide-react';
+import { FileText, Settings, Upload, Loader2, CheckSquare, Square, Layers } from 'lucide-react';
 
-export default function UploadStage({ onStart }) {
+const OUTPUT_OPTIONS = [
+  { id: 'blog', label: 'Blog Post', desc: 'Long-form SEO optimized article' },
+  { id: 'social', label: 'X/Twitter Thread', desc: 'Bite-sized viral thread' },
+  { id: 'email', label: 'Email Newsletter', desc: 'Direct marketing copy' },
+  { id: 'linkedin', label: 'LinkedIn Article', desc: 'Professional thought leadership' },
+  { id: 'press', label: 'Press Release', desc: 'Official media announcement' },
+  { id: 'ad', label: 'Facebook Ad Copy', desc: 'High-converting ad variants' }
+];
+
+export default function UploadStage({ onStart, isProcessing }) {
   const [text, setText] = useState('');
   const [tone, setTone] = useState('Professional & Trustworthy');
   const [audience, setAudience] = useState('');
+  const [selectedOutputs, setSelectedOutputs] = useState(['blog', 'social', 'email']);
   const fileInputRef = useRef(null);
+
+  const toggleOutput = (id) => {
+    setSelectedOutputs(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (text.trim()) {
+    if (text.trim() && !isProcessing && selectedOutputs.length > 0) {
       onStart({ 
         sourceText: text.trim(), 
         tone, 
-        audience: audience.trim() || 'General Audience' 
+        audience: audience.trim() || 'General Audience',
+        outputs: selectedOutputs
       });
     }
   };
@@ -31,86 +48,113 @@ export default function UploadStage({ onStart }) {
   };
 
   return (
-    <div className="glass-panel p-8 fade-in w-full max-w-2xl mx-auto mt-8 flex flex-col gap-6">
-      <div className="text-center">
-        <div className="flex justify-center mb-4">
-          <div style={{ background: 'rgba(37, 99, 235, 0.1)', padding: '16px', borderRadius: '50%' }}>
-            <UploadCloud size={48} color="var(--accent-blue)" />
-          </div>
-        </div>
-        <h2 className="text-xl mb-2">Provide Source Material</h2>
-        <p className="text-muted text-sm">
-          Upload a document or paste your text below. Cymonic AI agents will transform it into a full marketing campaign.
-        </p>
+    <div className="glass-panel p-8 md:p-10 flex flex-col gap-8 fade-in">
+      <div className="text-center mb-4">
+        <h2 className="text-3xl mb-3 font-outfit text-white font-bold">Campaign Configuration</h2>
+        <p className="text-slate-400 text-lg">Define your inputs and select exactly what assets you want to generate.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-10 relative">
         
-        {/* Upload Button */}
-        <div className="flex justify-end">
-          <input 
-            type="file" 
-            accept=".txt,.md,.csv,.json"
-            onChange={handleFileUpload} 
-            ref={fileInputRef} 
-            style={{ display: 'none' }} 
+        {/* Step 1: Source */}
+        <section className="flex flex-col gap-4">
+          <div className="flex justify-between items-end border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
+            <div>
+               <h3 className="text-lg font-bold text-white">1. Source Material</h3>
+               <p className="text-xs text-slate-400 mt-1">Upload a document or paste context below.</p>
+            </div>
+            
+            <div>
+              <input type="file" accept=".txt,.md,.csv,.json" onChange={handleFileUpload} ref={fileInputRef} style={{ display: 'none' }} />
+              <button type="button" onClick={() => fileInputRef.current.click()} className="btn-secondary flex items-center gap-2 px-4 py-2 text-sm rounded-lg">
+                <Upload size={16} /> Upload File (.txt, .md)
+              </button>
+            </div>
+          </div>
+          <textarea 
+            className="flex-1 min-h-[160px] text-base leading-relaxed"
+            placeholder="e.g. Cymonic is launching a new AI pipeline platform that reduces API costs by 40%..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            disabled={isProcessing}
+            style={{ resize: 'vertical' }}
           />
-          <button 
-            type="button" 
-            onClick={() => fileInputRef.current.click()}
-            className="btn-secondary flex items-center justify-center gap-2 px-4 py-2 text-sm"
-          >
-            <Upload size={16} />
-            Upload File (.txt, .md)
-          </button>
-        </div>
+        </section>
 
-        <textarea 
-          rows={8} 
-          placeholder="e.g. Cymonic is launching a new AI-powered widget that saves 20 hours a week..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          style={{ resize: 'vertical' }}
-        />
+        {/* Step 2: Settings */}
+        <section className="flex flex-col gap-4">
+          <div className="border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
+             <h3 className="text-lg font-bold text-white">2. Brand Voice</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold tracking-widest uppercase text-slate-400">Campaign Tone</label>
+              <select value={tone} onChange={(e) => setTone(e.target.value)} disabled={isProcessing}>
+                <option value="Professional & Trustworthy">Professional & Trustworthy</option>
+                <option value="Bold & Disruptive">Bold & Disruptive</option>
+                <option value="Conversational & Friendly">Conversational & Friendly</option>
+                <option value="Urgent & Exciting">Urgent & Exciting</option>
+                <option value="Highly Technical/Academic">Highly Technical/Academic</option>
+              </select>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold tracking-widest uppercase text-slate-400">Target Audience</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Software Engineers, C-Suite Execs" 
+                value={audience}
+                onChange={(e) => setAudience(e.target.value)}
+                disabled={isProcessing}
+              />
+            </div>
+          </div>
+        </section>
 
-        <div className="grid grid-cols-2 gap-4 mt-2">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium flex items-center gap-2 text-muted"><Settings size={14} /> Campaign Tone</label>
-            <select 
-              value={tone} 
-              onChange={(e) => setTone(e.target.value)}
-              className="p-3"
-              style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '14px', outline: 'none' }}
-            >
-              <option value="Professional & Trustworthy">Professional & Trustworthy</option>
-              <option value="Bold & Disruptive">Bold & Disruptive</option>
-              <option value="Conversational & Friendly">Conversational & Friendly</option>
-              <option value="Urgent & Exciting">Urgent & Exciting</option>
-              <option value="Highly Technical/Academic">Highly Technical/Academic</option>
-            </select>
+        {/* Step 3: Desired Outputs */}
+        <section className="flex flex-col gap-4">
+          <div className="border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
+             <h3 className="text-lg font-bold text-white">3. Generation Targets</h3>
+             <p className="text-xs text-slate-400 mt-1">Select all formats you want the AI hive to create.</p>
           </div>
           
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium flex items-center gap-2 text-muted"><Settings size={14} /> Target Audience</label>
-            <input 
-              type="text" 
-              placeholder="e.g. C-Suite Execs, Students" 
-              value={audience}
-              onChange={(e) => setAudience(e.target.value)}
-              className="p-3"
-              style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '14px', outline: 'none' }}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+             {OUTPUT_OPTIONS.map((opt) => {
+               const isSelected = selectedOutputs.includes(opt.id);
+               return (
+                 <div 
+                   key={opt.id}
+                   onClick={() => !isProcessing && toggleOutput(opt.id)}
+                   className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-3`}
+                   style={{ 
+                      borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-color)', 
+                      background: isSelected ? 'rgba(16, 185, 129, 0.05)' : 'var(--bg-dark)'
+                   }}
+                 >
+                    <div className="mt-0.5" style={{ color: isSelected ? 'var(--accent-primary)' : '#4B5563' }}>
+                       {isSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+                    </div>
+                    <div>
+                       <h4 className={`font-bold text-sm ${isSelected ? 'text-white' : 'text-slate-300'}`}>{opt.label}</h4>
+                       <p className={`text-xs mt-1 ${isSelected ? 'text-emerald-400' : 'text-slate-500'}`}>{opt.desc}</p>
+                    </div>
+                 </div>
+               )
+             })}
           </div>
-        </div>
+        </section>
         
-        <button 
-          type="submit" 
-          className="btn-primary flex items-center justify-center gap-2 p-4 text-xl mt-4"
-          disabled={!text.trim()}
-        >
-          <FileText size={20} />
-          Start the Cymonic Factory
-        </button>
+        <div className="pt-4">
+          <button 
+            type="submit" 
+            className="btn-primary w-full flex items-center justify-center gap-2 p-5 text-lg rounded-xl shadow-lg hover:-translate-y-1"
+            disabled={!text.trim() || isProcessing || selectedOutputs.length === 0}
+          >
+            {isProcessing ? <Loader2 size={24} className="animate-spin" /> : <Layers size={24} />}
+            {isProcessing ? 'Initializing Agents...' : 'Initialize Factory Engine'}
+          </button>
+          {selectedOutputs.length === 0 && <p className="text-center text-red-400 text-sm mt-3">Please select at least one generation target.</p>}
+        </div>
       </form>
     </div>
   );

@@ -1,24 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Bot, FileWarning, Search, Feather, ShieldCheck } from 'lucide-react';
-import { processCampaign } from '../services/agentCoordinator';
+import React, { useEffect, useState, useRef } from 'react';
+import { processCampaign } from '../services/agentCoordinator.js';
+import { Bot, CheckCircle2, ChevronRight, FileWarning } from 'lucide-react';
 
 export default function AgentRoom({ config, onComplete }) {
   const [logs, setLogs] = useState([]);
-  const [activeAgent, setActiveAgent] = useState('Researcher');
+  const [agentsFinished, setAgentsFinished] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    // Start the process immediately when Room mounts
-    processCampaign(config, (msgData) => {
-      setLogs((prev) => [...prev, msgData]);
-      if (msgData.state === 'thinking') {
-        setActiveAgent(msgData.agent);
-      } else if (msgData.state === 'done') {
-        setActiveAgent(null);
+    let isMounted = true;
+    
+    setLogs([{ agent: 'System', msg: 'Factory Engine ignited. Delegating campaign parameters...', status: 'info', type: 'system' }]);
+
+    const run = async () => {
+      try {
+        const finalData = await processCampaign(config, (log) => {
+          if (isMounted) setLogs(prev => [...prev, log]);
+        });
+        
+        if (isMounted) {
+          setAgentsFinished(true);
+          setTimeout(() => onComplete(finalData), 1500);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setLogs(prev => [...prev, { agent: 'Error', msg: 'The hive failed to compile the request.', status: 'error', type: 'error' }]);
+        }
       }
-    }, onComplete);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    };
+    run();
+    return () => { isMounted = false; };
+  }, [config, onComplete]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -26,52 +38,62 @@ export default function AgentRoom({ config, onComplete }) {
     }
   }, [logs]);
 
-  const AgentIcon = ({ name, icon: Icon, active, color }) => (
-    <div className={`flex flex-col items-center gap-2 agent-neon ${active ? 'active' : ''}`} style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-panel)' }}>
-      <div style={{ background: color, padding: '12px', borderRadius: '50%', opacity: active ? 1 : 0.5, transition: 'all 0.3s' }}>
-        <Icon size={32} color="#fff" />
-      </div>
-      <span className="font-semibold text-sm">{name}</span>
-      {active && (
-        <div className="typing-indicator text-xs mt-1">
-          <span className="text-muted"></span><span className="text-muted"></span><span className="text-muted"></span>
-        </div>
-      )}
-    </div>
-  );
-
   return (
-    <div className="w-full flex-1 flex flex-col gap-6 fade-in h-full">
-      <h2 className="text-xl font-bold">The Agent Room</h2>
+    <div className="w-full h-full flex flex-col items-center justify-center fade-in">
       
-      {/* Visual Agent representations */}
-      <div className="grid grid-cols-3 gap-6">
-        <AgentIcon name="Fact-Checker" icon={Search} active={activeAgent === 'Researcher'} color="var(--accent-blue)" />
-        <AgentIcon name="Copywriter" icon={Feather} active={activeAgent === 'Copywriter'} color="var(--accent-purple)" />
-        <AgentIcon name="Editor-in-Chief" icon={ShieldCheck} active={activeAgent === 'Editor'} color="var(--accent-green)" />
+      {/* Visual Status Ring */}
+      <div className="relative w-32 h-32 mb-10 flex items-center justify-center">
+        {!agentsFinished ? (
+          <>
+            {/* Dark elegant dual spinners */}
+            <div className="absolute inset-0 rounded-full border-t-2 border-emerald-500 animate-spin-slow" style={{ opacity: 0.8 }}></div>
+            <div className="absolute inset-2 rounded-full border-b-2 border-emerald-300 animate-spin-reverse-slow" style={{ opacity: 0.5 }}></div>
+            <div className="bg-slate-800 rounded-full w-20 h-20 flex items-center justify-center shadow-lg border border-slate-700">
+               <Bot size={32} color="var(--accent-primary)" />
+            </div>
+          </>
+        ) : (
+          <div className="bg-emerald-500 rounded-full w-24 h-24 flex items-center justify-center shadow-lg fade-in">
+            <CheckCircle2 size={48} color="white" />
+          </div>
+        )}
       </div>
 
-      {/* Live Chat / Log Feed */}
-      <div className="glass-panel flex-1 flex flex-col overflow-hidden">
-        <div className="p-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
-          <h3 className="font-semibold flex items-center gap-2 text-sm"><Bot size={16} /> Live Collaboration Feed</h3>
+      <div className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '400px' }}>
+        <div className="bg-slate-800 p-4 border-b border-slate-700 flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500 opacity-80"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-80"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500 opacity-80"></div>
+          <span className="ml-3 text-xs font-bold text-slate-400 tracking-wider">CYMONIC HIVE FEED</span>
         </div>
-        <div className="p-4 overflow-y-auto flex-1 flex flex-col gap-4" ref={scrollRef}>
+        
+        <div className="p-4 overflow-y-auto flex-1 flex flex-col gap-4 custom-scrollbar" ref={scrollRef}>
           {logs.map((log, i) => (
             <div key={i} className="flex gap-3 fade-in">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" 
-                  style={{ background: log.type === 'error' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)' }}>
-                {log.type === 'error' ? <FileWarning size={14} color="#ef4444" /> : <Bot size={14} />}
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm" 
+                  style={{ background: log.type === 'error' ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)' }}>
+                {log.type === 'error' ? <FileWarning size={14} color="#ef4444" /> : <Bot size={14} color="var(--accent-primary)" />}
               </div>
-              <div>
-                <span className="text-xs font-bold text-muted block mb-1">{log.agent}</span>
-                <div className="p-3 text-sm rounded-lg" style={{ background: log.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)' }}>
+              <div className="flex-1">
+                <span className="text-xs font-bold text-slate-400 block mb-1">{log.agent}</span>
+                <div className="p-3 text-sm rounded-lg text-slate-300" style={{ background: log.type === 'error' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }}>
                   {log.msg}
                 </div>
               </div>
             </div>
           ))}
-          {logs.length === 0 && <p className="text-muted text-sm text-center">Initializing agents...</p>}
+          {!agentsFinished && (
+            <div className="flex gap-3 fade-in mt-2">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)'}}>
+                <Bot size={14} color="var(--text-muted)" />
+              </div>
+              <div className="flex items-center">
+                <span className="text-xs text-slate-500 flex items-center gap-2 typing-indicator">
+                  Processing <span></span><span></span><span></span>
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
